@@ -7,8 +7,8 @@ from textual.widgets import Footer, Digits
 
 class TimeDisplay(Digits):
     start_time: reactive[float] = reactive(monotonic)
-    total_countdown_seconds: reactive[float] = reactive(25.0)
-    time_left_seconds: reactive[float] = reactive(25.0)
+    total_countdown_seconds: reactive[float] = reactive(25.0 * 60)
+    time_left_seconds: reactive[float] = reactive(25.0 * 60)
 
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
@@ -38,8 +38,8 @@ class TimeDisplay(Digits):
     def reset(self):
         self.stop()
         self.start_time = monotonic()
-        self.total_countdown_seconds = 25.0
-        self.time_left_seconds = 25.0
+        self.total_countdown_seconds = 25.0 * 60
+        self.time_left_seconds = 25.0 * 60
 
     def toggle_timer(self):
         if self.started:
