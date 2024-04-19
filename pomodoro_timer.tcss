@@ -5,12 +5,6 @@ PomodoroTimer {
     min-width: 50;
     margin: 1;
     padding: 1;
-    content-align: center middle;
-    border: solid blue;
-}
-
-Static {
-    border: solid green;
 }
 
 TimeDisplay {
