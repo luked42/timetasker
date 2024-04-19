@@ -26,6 +26,7 @@ class TimeDisplay(Digits):
         self.update(f"{hours:02,.0f}:{minutes:02.0f}:{seconds:02.0f}")
 
     def start(self) -> None:
+        self.total_countdown_seconds = self.time_left_seconds
         self.start_time = monotonic()
         self.update_timer.resume()
         self.started = True
@@ -38,7 +39,6 @@ class TimeDisplay(Digits):
     def reset(self):
         self.stop()
         self.start_time = monotonic()
-        self.total_countdown_seconds = 25.0 * 60
         self.time_left_seconds = 25.0 * 60
 
     def toggle_timer(self):
