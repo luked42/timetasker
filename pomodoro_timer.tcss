@@ -23,4 +23,8 @@ TimeDisplay {
     margin: 0;
 }
 
-
+.finished
+{
+    color: green;
+    border: solid green;
+}

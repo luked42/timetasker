@@ -42,16 +42,23 @@ class TimeDisplay(Digits):
         self.started = False
         self.finished = False
         self.complete_counter: CompleteCounter = complete_counter
+        self.count_down: bool = True
 
     def on_mount(self) -> None:
         self.update_timer = self.set_interval(1, self.update_time, pause=True)
         self.reset()
 
     def update_time(self) -> None:
-        self.time_left_seconds = max(0.0, self.total_countdown_seconds - (monotonic() - self.start_time))
+        time_difference: float = monotonic() - self.start_time
+        if not self.count_down:
+            time_difference = -1.0 * time_difference
+        self.time_left_seconds = max(0.0, self.total_countdown_seconds - time_difference)
         if self.time_left_seconds <= 0.0 and not self.finished:
             self.complete_counter.increment_count()
             self.finished = True
+            self.count_down = False
+            self.add_class("finished")
+            self.start()
 
     def watch_time_left_seconds(self, time: float) -> None:
         minutes, seconds = divmod(time, 60)
@@ -74,6 +81,8 @@ class TimeDisplay(Digits):
         self.start_time = monotonic()
         self.time_left_seconds = self.minutes * 60
         self.finished = False
+        self.count_down = True
+        self.remove_class("finished")
 
     def toggle_timer(self):
         if self.started:
