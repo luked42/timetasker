@@ -32,7 +32,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    minutes: float = 0.05
+    minutes: float = 0.1
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
@@ -113,6 +113,11 @@ class PomodoroTimer(App):
     def action_reset_timer(self) -> None:
         countdown_timer: TimeDisplay = self.query_one(TimeDisplay)
         countdown_timer.reset()
+
+
+def main_func() -> None:
+    app = PomodoroTimer()
+    app.run()
 
 
 if __name__ == "__main__":
