@@ -1,3 +1,5 @@
+import os
+import pickle
 from time import monotonic
 
 from textual.app import App, ComposeResult
@@ -10,16 +12,28 @@ class CompleteCounter(Static):
 
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
+        self.complete_count_pickle_path: str = os.path.expanduser("~/.config/pommo_complete_count.pickle")
 
     def on_mount(self) -> None:
+        self._load_count()
         self._update_count()
 
     def increment_count(self) -> None:
         self.complete_count += 1
         self._update_count()
+        self._save_count()
 
     def _update_count(self) -> None:
         self.update(f"{self.complete_count}")
+
+    def _load_count(self) -> None:
+        if os.path.exists(self.complete_count_pickle_path):
+            with open(self.complete_count_pickle_path, "rb") as pickle_file:
+                self.complete_count = int(pickle.load(pickle_file))
+
+    def _save_count(self) -> None:
+        with open(self.complete_count_pickle_path, "wb") as pickle_file:
+            pickle.dump(str(self.complete_count), pickle_file)
 
 
 class FooterBar(Static):
@@ -32,7 +46,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    minutes: float = 0.1
+    minutes: float = 0.05
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
