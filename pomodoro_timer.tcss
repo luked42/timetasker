@@ -1,18 +1,26 @@
-PomodoroTimer {
-    layout: vertical;
-    background: $boost;
-    height: 5;
-    min-width: 50;
-    margin: 1;
-    padding: 1;
+Screen {
+    align: center middle;
+    padding: 0;
+    margin: 0;
 }
 
 TimeDisplay {
     text-align: center;
     height: auto;
     border: solid white;
+    padding: 0;
+    margin: 0;
 }
 
-Screen {
-    align: center middle;
+#complete_counter {
+    text-align: center;
 }
+
+#footer_bar {
+    dock: bottom;
+    background: red 50%;
+    padding: 0;
+    margin: 0;
+}
+
+
