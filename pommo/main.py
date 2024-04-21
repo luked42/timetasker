@@ -1,3 +1,4 @@
+from datetime import date, datetime
 import os
 import pickle
 from time import monotonic
@@ -13,27 +14,38 @@ class CompleteCounter(Static):
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
         self.complete_count_pickle_path: str = os.path.expanduser("~/.config/pommo_complete_count.pickle")
+        self.event_list: list[datetime] = self._load_event_list()
 
     def on_mount(self) -> None:
-        self._load_count()
+        self._count_events_today()
         self._update_count()
 
     def increment_count(self) -> None:
-        self.complete_count += 1
+        self.event_list.append(datetime.now())
+        self._count_events_today()
         self._update_count()
-        self._save_count()
+        self._save_event_list()
 
     def _update_count(self) -> None:
         self.update(f"{self.complete_count}")
 
-    def _load_count(self) -> None:
-        if os.path.exists(self.complete_count_pickle_path):
-            with open(self.complete_count_pickle_path, "rb") as pickle_file:
-                self.complete_count = int(pickle.load(pickle_file))
-
-    def _save_count(self) -> None:
+    def _save_event_list(self) -> None:
         with open(self.complete_count_pickle_path, "wb") as pickle_file:
-            pickle.dump(str(self.complete_count), pickle_file)
+            pickle.dump(self.event_list, pickle_file)
+
+    def _load_event_list(self) -> list[datetime]:
+        event_list: list[datetime] = []
+        try:
+            with open(self.complete_count_pickle_path, "rb") as pickle_file:
+                event_list = pickle.load(pickle_file)
+        except FileNotFoundError:
+            pass
+
+        return event_list
+
+    def _count_events_today(self) -> None:
+        today: date = datetime.now().date()
+        self.complete_count = len([x for x in self.event_list if x.date() == today])
 
 
 class FooterBar(Static):
@@ -106,8 +118,6 @@ class TimeDisplay(Digits):
 
 
 class PomodoroTimer(App):
-    """A Textual app to manage stopwatches."""
-
     CSS_PATH = "pomodoro_timer.tcss"
 
     BINDINGS = [
