@@ -58,7 +58,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    minutes: float = 0.05
+    minutes: float = 25.0
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
