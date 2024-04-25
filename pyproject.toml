@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "pommo"
+name = "timetasker"
 version = "0.1.0"
 description = ""
 authors = []
@@ -17,7 +17,7 @@ mypy = "^0.910"
 flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
-pommo = "pommo.main:main_func"
+timetasker = "timetasker.main:main_func"
 
 [tool.black]
 line-length = 120

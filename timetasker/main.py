@@ -13,7 +13,7 @@ class CompleteCounter(Static):
 
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
-        self.complete_count_pickle_path: str = os.path.expanduser("~/.config/pommo_complete_count.pickle")
+        self.complete_count_pickle_path: str = os.path.expanduser("~/.config/timetasker.pickle")
         self.event_list: list[datetime] = self._load_event_list()
 
     def on_mount(self) -> None:
@@ -117,8 +117,8 @@ class TimeDisplay(Digits):
             self.start()
 
 
-class PomodoroTimer(App):
-    CSS_PATH = "pomodoro_timer.tcss"
+class Timetasker(App):
+    CSS_PATH = "timetasker.tcss"
 
     BINDINGS = [
         ("b", "toggle_timer", "Toggle"),
@@ -140,10 +140,10 @@ class PomodoroTimer(App):
 
 
 def main_func() -> None:
-    app = PomodoroTimer()
+    app = Timetasker()
     app.run()
 
 
 if __name__ == "__main__":
-    app = PomodoroTimer()
+    app = Timetasker()
     app.run()
