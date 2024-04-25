@@ -9,7 +9,7 @@ description = ""
 authors = []
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.9"
 textual = "^0.56"
 
 [tool.poetry.dev-dependencies]
@@ -21,5 +21,4 @@ timetasker = "timetasker.main:main_func"
 
 [tool.black]
 line-length = 120
-target-version = ['py312']
 
