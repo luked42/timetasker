@@ -3,9 +3,11 @@ import os
 import pickle
 from time import monotonic
 
-from textual.app import App, ComposeResult
+from textual.app import App, ComposeResult, events
 from textual.reactive import reactive
-from textual.widgets import Digits, Static
+from textual.screen import ModalScreen
+from textual.widgets import Digits, Static, Label
+from textual.containers import Grid
 
 
 class CompleteCounter(Static):
@@ -116,6 +118,26 @@ class TimeDisplay(Digits):
         else:
             self.start()
 
+class HelpScreen(ModalScreen):
+
+    HELP_TEXT = """
+    Controls:
+
+    - 'b' : toggle timer
+    - 'r' : reset interval
+    - 'q' : quit
+    - '?' : show help
+
+    (press any key to exit)
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Grid(
+            Label(self.HELP_TEXT)
+        )
+
+    def on_key(self, _: events.Key):
+        self.dismiss()
 
 class Timetasker(App):
     CSS_PATH = "timetasker.tcss"
@@ -123,6 +145,8 @@ class Timetasker(App):
     BINDINGS = [
         ("b", "toggle_timer", "Toggle"),
         ("r", "reset_timer", "Reset"),
+        ("q", "quit", "Quit"),
+        ("?", "show_help", "Show Help")
     ]
 
     def compose(self) -> ComposeResult:
@@ -137,6 +161,9 @@ class Timetasker(App):
     def action_reset_timer(self) -> None:
         countdown_timer: TimeDisplay = self.query_one(TimeDisplay)
         countdown_timer.reset()
+
+    def action_show_help(self) -> None:
+        self.push_screen(HelpScreen())
 
 
 def main_func() -> None:
