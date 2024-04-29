@@ -45,31 +45,25 @@ class Config:
     @property
     def _data_dir(self) -> Path:
         if os.name == "posix":
-            # On Linux and macOS, follow XDG Base Directory Specification
             data_home = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
             return Path(data_home) / globals.APP_NAME
         elif os.name == "nt":
-            # On Windows, use the user's appdata directory
             return Path(os.environ["APPDATA"]) / globals.APP_NAME / "data"
         else:
-            # Fallback for other platforms
             return Path.home() / "." + globals.APP_NAME / "data"
 
     @property
     def _cache_dir(self) -> Path:
         if os.name == "posix":
-            # On Linux and macOS, follow XDG Base Directory Specification
             cache_home = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
             return Path(cache_home) / globals.APP_NAME
         elif os.name == "nt":
-            # On Windows, use the user's local appdata directory
             return (
                 Path(os.environ.get("LOCALAPPDATA", os.path.join(os.environ["APPDATA"], "Local")))
                 / globals.APP_NAME
                 / "cache"
             )
         else:
-            # Fallback for other platforms
             return Path.home() / "." + globals.APP_NAME / "cache"
 
     @property
