@@ -1,5 +1,5 @@
 from datetime import date, datetime
-import os
+from pathlib import Path
 import pickle
 from time import monotonic
 
@@ -9,13 +9,15 @@ from textual.screen import ModalScreen
 from textual.widgets import Digits, Static, Label
 from textual.containers import Grid
 
+from timetasker.config import config
+
 
 class CompleteCounter(Static):
     complete_count: reactive[int] = reactive(0)
 
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
-        self.complete_count_pickle_path: str = os.path.expanduser("~/.config/timetasker.pickle")
+        self.complete_count_pickle_path: Path = config.data_pickle_filepath
         self.event_list: list[datetime] = self._load_event_list()
 
     def on_mount(self) -> None:
@@ -60,7 +62,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    minutes: float = 25.0
+    work_interval: float = config.work_interval_duration.total_seconds()
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
@@ -107,7 +109,7 @@ class TimeDisplay(Digits):
     def reset(self):
         self.stop()
         self.start_time = monotonic()
-        self.time_left_seconds = self.minutes * 60
+        self.time_left_seconds = self.work_interval
         self.finished = False
         self.count_down = True
         self.remove_class("finished")
@@ -171,5 +173,4 @@ def main_func() -> None:
 
 
 if __name__ == "__main__":
-    app = Timetasker()
-    app.run()
+    main_func()
