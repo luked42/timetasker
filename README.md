@@ -6,7 +6,7 @@
 * Run command `pommo` in terminal
 * Run build checks with `tox`
 
-# Configuration
+## Configuration
 Fully supported config file at `$XDG_CONFIG_PATH/timetasker/timetasker.toml` for Unix systems or `APPDATA\timetasker\timetasker.toml` on Windows:
 
 ```toml
