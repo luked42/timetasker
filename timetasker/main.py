@@ -62,7 +62,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    work_interval: float = config.work_interval_duration.total_seconds()
+    work_interval_seconds: float = config.work_interval_duration.total_seconds()
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
@@ -109,7 +109,7 @@ class TimeDisplay(Digits):
     def reset(self):
         self.stop()
         self.start_time = monotonic()
-        self.time_left_seconds = self.work_interval
+        self.time_left_seconds = self.work_interval_seconds
         self.finished = False
         self.count_down = True
         self.remove_class("finished")
