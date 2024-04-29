@@ -7,7 +7,7 @@
 * Run build checks with `tox`
 
 ## Configuration
-Fully supported config file at `$XDG_CONFIG_PATH/timetasker/timetasker.toml` for Unix systems or `APPDATA\timetasker\timetasker.toml` on Windows:
+Fully supported config file at `${XDG_CONFIG_PATH}/timetasker/timetasker.toml` for Unix systems or `${APPDATA}\timetasker\timetasker.toml` on Windows:
 
 ```toml
 [timer]
