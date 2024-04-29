@@ -118,8 +118,8 @@ class TimeDisplay(Digits):
         else:
             self.start()
 
-class HelpScreen(ModalScreen):
 
+class HelpScreen(ModalScreen):
     HELP_TEXT = """
     Controls:
 
@@ -132,12 +132,11 @@ class HelpScreen(ModalScreen):
     """
 
     def compose(self) -> ComposeResult:
-        yield Grid(
-            Label(self.HELP_TEXT)
-        )
+        yield Grid(Label(self.HELP_TEXT))
 
     def on_key(self, _: events.Key):
         self.dismiss()
+
 
 class Timetasker(App):
     CSS_PATH = "timetasker.tcss"
@@ -146,7 +145,7 @@ class Timetasker(App):
         ("b", "toggle_timer", "Toggle"),
         ("r", "reset_timer", "Reset"),
         ("q", "quit", "Quit"),
-        ("?", "show_help", "Show Help")
+        ("?", "show_help", "Show Help"),
     ]
 
     def compose(self) -> ComposeResult:
