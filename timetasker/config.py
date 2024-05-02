@@ -3,14 +3,18 @@ import os
 from pathlib import Path
 from timetasker import globals, timeutils
 import toml
+from .platform import PlatformDirs
 
 
+# Config sections
 SECTION_TIMER = "timer"
 
 
+# Supported configuration keys
 KEY_WORK_INTERVAL = "work_interval"
 
 
+# Default configuration values
 DEFAULT_WORK_INTERVAL = "25m"
 
 
@@ -20,11 +24,12 @@ class Config:
     """
 
     def __init__(self) -> None:
+        self._platform_dirs = PlatformDirs(globals.APP_NAME)
         self._config: dict = {}
         self._load_config()
 
     def _load_config(self) -> None:
-        config_filepath = self._config_dir / globals.CONFIG_FILENAME
+        config_filepath = self._platform_dirs.config_dir / globals.CONFIG_FILENAME
 
         if not config_filepath.exists():
             return
@@ -33,42 +38,8 @@ class Config:
             self._config = toml.load(config_file)
 
     @property
-    def _config_dir(self) -> Path:
-        if os.name == "posix":
-            config_home = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
-            return Path(config_home) / globals.APP_NAME
-        elif os.name == "nt":
-            return Path(os.environ["APPDATA"]) / globals.APP_NAME
-        else:
-            return Path.home() / "." + globals.APP_NAME
-
-    @property
-    def _data_dir(self) -> Path:
-        if os.name == "posix":
-            data_home = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
-            return Path(data_home) / globals.APP_NAME
-        elif os.name == "nt":
-            return Path(os.environ["APPDATA"]) / globals.APP_NAME / "data"
-        else:
-            return Path.home() / "." + globals.APP_NAME / "data"
-
-    @property
-    def _cache_dir(self) -> Path:
-        if os.name == "posix":
-            cache_home = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
-            return Path(cache_home) / globals.APP_NAME
-        elif os.name == "nt":
-            return (
-                Path(os.environ.get("LOCALAPPDATA", os.path.join(os.environ["APPDATA"], "Local")))
-                / globals.APP_NAME
-                / "cache"
-            )
-        else:
-            return Path.home() / "." + globals.APP_NAME / "cache"
-
-    @property
     def data_pickle_filepath(self) -> Path:
-        filepath = self._cache_dir / globals.DATA_PICKLE_FILENAME
+        filepath = self._platform_dirs.data_dir / globals.DATA_PICKLE_FILENAME
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
         return filepath
 

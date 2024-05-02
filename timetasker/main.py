@@ -1,13 +1,13 @@
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 import pickle
 from time import monotonic
 
-from textual.app import App, ComposeResult, events
+from textual.app import App, ComposeResult
 from textual.reactive import reactive
-from textual.screen import ModalScreen
-from textual.widgets import Digits, Static, Label
-from textual.containers import Grid
+from textual.command import DiscoveryHit, Hit, Provider, Hits
+from textual.widgets import Digits, Static
 
 from timetasker.config import config
 
@@ -121,33 +121,43 @@ class TimeDisplay(Digits):
             self.start()
 
 
-class HelpScreen(ModalScreen):
-    HELP_TEXT = """
-    Controls:
+class BindingsProvider(Provider):
+    async def startup(self) -> None:
+        self._shown_keys = self.app._bindings.shown_keys
 
-    - 'b' : toggle timer
-    - 'r' : reset interval
-    - 'q' : quit
-    - '?' : show help
+    async def search(self, query: str) -> Hits:
+        matcher = self.matcher(query)
+        app = self.app
+        for binding in self._shown_keys:
+            score = matcher.match(binding.description)
+            if score > 0:
+                yield Hit(
+                    score,
+                    matcher.highlight(binding.description),
+                    partial(app.run_action, binding.action),
+                    help=f"{binding.key} - {binding.description}",
+                )
 
-    (press any key to exit)
-    """
-
-    def compose(self) -> ComposeResult:
-        yield Grid(Label(self.HELP_TEXT))
-
-    def on_key(self, _: events.Key):
-        self.dismiss()
+    async def discover(self) -> Hits:
+        app = self.app
+        for binding in self._shown_keys:
+            yield DiscoveryHit(
+                binding.description,
+                partial(app.run_action, binding.action),
+                help=f"{binding.key} - {binding.description}",
+            )
 
 
 class Timetasker(App):
+    COMMANDS = {BindingsProvider}
+
     CSS_PATH = "timetasker.tcss"
 
     BINDINGS = [
-        ("b", "toggle_timer", "Toggle"),
-        ("r", "reset_timer", "Reset"),
+        ("b", "toggle_timer", "Toggle timer"),
+        ("r", "reset_timer", "Reset timer"),
         ("q", "quit", "Quit"),
-        ("?", "show_help", "Show Help"),
+        ("h", "command_palette", "Show Help"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -164,7 +174,8 @@ class Timetasker(App):
         countdown_timer.reset()
 
     def action_show_help(self) -> None:
-        self.push_screen(HelpScreen())
+        self.action_command_palette()
+        # self.push_screen(HelpScreen(self.BINDINGS))
 
 
 def main_func() -> None:

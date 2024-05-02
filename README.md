@@ -14,6 +14,6 @@ Fully supported config file at `${XDG_CONFIG_HOME}/timetasker/timetasker.toml` f
 work_interval = "25m" # supports XhYmZs format
 ```
 
-### Fallback posix
+### Fallbacks
 
-In the case that XDG_CONFIG_HOME is not set, timetasker will fall back to `~/.config`
+In the case that XDG_CONFIG_HOME is not set, or the os name is not recognised, timetasker will fall back to `~/.timetasker/`
