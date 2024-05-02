@@ -173,10 +173,6 @@ class Timetasker(App):
         countdown_timer: TimeDisplay = self.query_one(TimeDisplay)
         countdown_timer.reset()
 
-    def action_show_help(self) -> None:
-        self.action_command_palette()
-        # self.push_screen(HelpScreen(self.BINDINGS))
-
 
 def main_func() -> None:
     app = Timetasker()
