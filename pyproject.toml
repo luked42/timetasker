@@ -7,10 +7,13 @@ name = "timetasker"
 version = "0.1.0"
 description = ""
 authors = []
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 textual = "^0.56"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"

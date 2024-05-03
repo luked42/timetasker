@@ -1,11 +1,15 @@
 from datetime import date, datetime
-import os
+from functools import partial
+from pathlib import Path
 import pickle
 from time import monotonic
 
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
+from textual.command import DiscoveryHit, Hit, Provider, Hits
 from textual.widgets import Digits, Static
+
+from timetasker.config import config
 
 
 class CompleteCounter(Static):
@@ -13,7 +17,7 @@ class CompleteCounter(Static):
 
     def __init__(self, id: str) -> None:
         super().__init__(id=id)
-        self.complete_count_pickle_path: str = os.path.expanduser("~/.config/timetasker.pickle")
+        self.complete_count_pickle_path: Path = config.data_pickle_filepath
         self.event_list: list[datetime] = self._load_event_list()
 
     def on_mount(self) -> None:
@@ -58,7 +62,7 @@ class FooterBar(Static):
 
 
 class TimeDisplay(Digits):
-    minutes: float = 25.0
+    work_interval_seconds: float = config.work_interval_duration.total_seconds()
     start_time: reactive[float] = reactive(monotonic)
     total_countdown_seconds: reactive[float] = reactive(0)
     time_left_seconds: reactive[float] = reactive(0)
@@ -105,7 +109,7 @@ class TimeDisplay(Digits):
     def reset(self):
         self.stop()
         self.start_time = monotonic()
-        self.time_left_seconds = self.minutes * 60
+        self.time_left_seconds = self.work_interval_seconds
         self.finished = False
         self.count_down = True
         self.remove_class("finished")
@@ -117,12 +121,43 @@ class TimeDisplay(Digits):
             self.start()
 
 
+class BindingsProvider(Provider):
+    async def startup(self) -> None:
+        self._shown_keys = self.app._bindings.shown_keys
+
+    async def search(self, query: str) -> Hits:
+        matcher = self.matcher(query)
+        app = self.app
+        for binding in self._shown_keys:
+            score = matcher.match(binding.description)
+            if score > 0:
+                yield Hit(
+                    score,
+                    matcher.highlight(binding.description),
+                    partial(app.run_action, binding.action),
+                    help=f"{binding.key} - {binding.description}",
+                )
+
+    async def discover(self) -> Hits:
+        app = self.app
+        for binding in self._shown_keys:
+            yield DiscoveryHit(
+                binding.description,
+                partial(app.run_action, binding.action),
+                help=f"{binding.key} - {binding.description}",
+            )
+
+
 class Timetasker(App):
+    COMMANDS = {BindingsProvider}
+
     CSS_PATH = "timetasker.tcss"
 
     BINDINGS = [
-        ("b", "toggle_timer", "Toggle"),
-        ("r", "reset_timer", "Reset"),
+        ("b", "toggle_timer", "Toggle timer"),
+        ("r", "reset_timer", "Reset timer"),
+        ("q", "quit", "Quit"),
+        ("h", "command_palette", "Show Help"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -145,5 +180,4 @@ def main_func() -> None:
 
 
 if __name__ == "__main__":
-    app = Timetasker()
-    app.run()
+    main_func()
