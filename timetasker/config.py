@@ -3,7 +3,9 @@ import os
 from pathlib import Path
 from timetasker import globals, timeutils
 import toml
-from .platform import PlatformDirs
+
+
+from timetasker.platform_specific import PlatformDirs
 
 
 # Config sections
